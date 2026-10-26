@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 
@@ -12,7 +8,7 @@ export function AppLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header onMenuClick={() => setMobileNavOpen(true)} />

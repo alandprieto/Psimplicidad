@@ -15,7 +15,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       : user?.email;
 
   return (
-    <header className="flex h-16 items-center justify-between gap-3 border-b bg-card px-4 sm:px-6">
+    <header className="flex h-16 items-center justify-between gap-3 border-b bg-[#E0FFFF] px-4 sm:px-6">
       <div className="flex min-w-0 items-center gap-3">
         <Button
           variant="ghost"

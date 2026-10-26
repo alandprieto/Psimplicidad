@@ -22,7 +22,7 @@ interface SidebarProps {
 export function Sidebar({ onNavigate }: SidebarProps) {
   return (
     <aside
-      className={`min-h-screen w-64 shrink-0 flex-col border-r bg-card ${
+      className={`min-h-screen w-64 shrink-0 flex-col border-r bg-[#E0FFFF] ${
         onNavigate ? "flex lg:hidden" : "hidden lg:flex"
       }`}
     >
