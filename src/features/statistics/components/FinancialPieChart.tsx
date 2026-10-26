@@ -1,13 +1,6 @@
 import { useMonthlyFinancialStats } from "../hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { PieChart, Pie, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { centsToPesos, formatARS } from "@/lib/money";
 import { PieChart as ChartIcon } from "lucide-react";
 
@@ -36,8 +29,16 @@ export function FinancialPieChart() {
 
   // Si no hay montos, mostramos un gráfico vacío o aviso
   const chartData = [
-    { name: "Cobrado", value: centsToPesos(totalCollectedCents) },
-    { name: "Pendiente de Cobro", value: centsToPesos(totalPendingCents) },
+    {
+      name: "Cobrado",
+      value: centsToPesos(totalCollectedCents),
+      fill: COLORS[0],
+    },
+    {
+      name: "Pendiente de Cobro",
+      value: centsToPesos(totalPendingCents),
+      fill: COLORS[1],
+    },
   ];
 
   const hasData = totalCollectedCents > 0 || totalPendingCents > 0;
@@ -56,7 +57,7 @@ export function FinancialPieChart() {
             <p>No hay registros financieros para este mes todavía.</p>
           </div>
         ) : (
-          <div className="h-[300px] w-full">
+          <div className="h-75 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -70,14 +71,7 @@ export function FinancialPieChart() {
                   label={({ name, value }) =>
                     `${name}: ${formatARS(value * 100)}`
                   }
-                >
-                  {chartData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
+                />
                 <Tooltip
                   formatter={(value) => formatARS(Number(value) * 100)}
                 />

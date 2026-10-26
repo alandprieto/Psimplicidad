@@ -15,9 +15,17 @@ const navItems = [
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   return (
-    <aside className="w-64 border-r bg-card min-h-screen flex flex-col">
+    <aside
+      className={`min-h-screen w-64 shrink-0 flex-col border-r bg-card ${
+        onNavigate ? "flex lg:hidden" : "hidden lg:flex"
+      }`}
+    >
       <div className="p-6 border-b">
         <h2 className="text-xl font-bold tracking-tight text-primary">
           Psimplicidad
@@ -33,6 +41,7 @@ export function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                   isActive
