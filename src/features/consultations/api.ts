@@ -1,0 +1,98 @@
+import { supabase } from "@/lib/supabase";
+import type { Consultation } from "@/types/domain";
+
+export async function getConsultations(): Promise<Consultation[]> {
+  const { data, error } = await supabase
+    .from("consultations")
+    .select(
+      `
+      *,
+      patient:patients(*)
+    `,
+    )
+    .order("starts_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+
+  return (data || []).map((c: any) => ({
+    id: c.id,
+    professionalId: c.professional_id,
+    patientId: c.patient_id,
+    startsAt: c.starts_at,
+    durationMinutes: c.duration_minutes,
+    priceCents: c.price_cents,
+    paidCents: c.paid_cents,
+    status: c.status,
+    notes: c.notes,
+    createdAt: c.created_at,
+    patient: c.patient
+      ? {
+          id: c.patient.id,
+          professionalId: c.patient.professional_id,
+          firstName: c.patient.first_name,
+          lastName: c.patient.last_name,
+          phone: c.patient.phone,
+          isActive: c.patient.is_active,
+          createdAt: c.patient.created_at,
+        }
+      : undefined,
+  }));
+}
+
+export async function createConsultation(consultation: {
+  patientId: string;
+  startsAt: string;
+  durationMinutes: number;
+  priceCents: number;
+  notes?: string;
+}): Promise<Consultation> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("No hay sesión activa");
+
+  const { data, error } = await supabase
+    .from("consultations")
+    .insert({
+      professional_id: user.id,
+      patient_id: consultation.patientId,
+      title: "Consulta",
+      starts_at: consultation.startsAt,
+      duration_minutes: consultation.durationMinutes,
+      price_cents: consultation.priceCents,
+      notes: consultation.notes || null,
+    })
+    .select(
+      `
+      *,
+      patient:patients(*)
+    `,
+    )
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return {
+    id: data.id,
+    professionalId: data.professional_id,
+    patientId: data.patient_id,
+    startsAt: data.starts_at,
+    durationMinutes: data.duration_minutes,
+    priceCents: data.price_cents,
+    paidCents: data.paid_cents,
+    status: data.status,
+    notes: data.notes,
+    createdAt: data.created_at,
+    patient: data.patient
+      ? {
+          id: data.patient.id,
+          professionalId: data.patient.professional_id,
+          firstName: data.patient.first_name,
+          lastName: data.patient.last_name,
+          phone: data.patient.phone,
+          isActive: data.patient.is_active,
+          createdAt: data.patient.created_at,
+        }
+      : undefined,
+  };
+}
