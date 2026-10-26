@@ -15,8 +15,9 @@ export interface ConsultationType {
   professionalId: string;
   name: string;
   defaultPriceCents: number;
-  durationMinutes: number;
+  defaultDurationMinutes: number;
   isActive: boolean;
+  createdAt: string;
 }
 
 export interface Consultation {
@@ -41,6 +42,7 @@ export interface Payment {
   professionalId: string;
   consultationId: string;
   amountCents: number;
+  paymentMethod: string;
   paidAt: string;
   notes?: string | null;
   createdAt: string;

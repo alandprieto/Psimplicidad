@@ -17,6 +17,7 @@ export function useCreatePatient() {
     onSuccess: () => {
       // Invalida la caché para que la lista de pacientes se actualice sola
       queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardMetrics"] });
     },
   });
 }
@@ -34,6 +35,7 @@ export function useUpdatePatient() {
     }) => updatePatient(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardMetrics"] });
     },
   });
 }
@@ -46,6 +48,7 @@ export function useTogglePatientStatus() {
       togglePatientStatus(id, isActive),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardMetrics"] });
     },
   });
 }

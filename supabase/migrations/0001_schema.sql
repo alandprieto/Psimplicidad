@@ -47,6 +47,8 @@ create table payments (
   professional_id uuid not null references auth.users(id),
   consultation_id uuid not null references consultations(id) on delete cascade,
   amount_cents integer not null check (amount_cents > 0),
+  payment_method text not null default 'otro',
+  notes text,
   payment_date timestamptz not null default now(),
   created_at timestamptz not null default now()
 );
