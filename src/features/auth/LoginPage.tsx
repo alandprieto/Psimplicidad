@@ -1,8 +1,16 @@
 import { useState, type SubmitEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { ARGENTINE_PROVINCES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -14,6 +22,8 @@ import {
 export function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [fullName, setFullName] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [licenseProvince, setLicenseProvince] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,11 +37,18 @@ export function LoginPage() {
 
     try {
       if (isRegistering) {
+        if (!licenseProvince) {
+          throw new Error("Seleccioná la jurisdicción de tu matrícula.");
+        }
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: fullName.trim() },
+            data: {
+              full_name: fullName.trim(),
+              license_number: licenseNumber.trim(),
+              license_province: licenseProvince,
+            },
           },
         });
 
@@ -50,6 +67,8 @@ export function LoginPage() {
         const { error: profileError } = await supabase.from("profiles").upsert({
           id: data.user.id,
           full_name: fullName.trim(),
+          license_number: licenseNumber.trim(),
+          license_province: licenseProvince,
         });
         if (profileError) {
           throw new Error(
@@ -119,6 +138,58 @@ export function LoginPage() {
                   onChange={(event) => setFullName(event.target.value)}
                   required
                 />
+              </div>
+            )}
+            {isRegistering && (
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium leading-none"
+                  htmlFor="licenseNumber"
+                >
+                  Matrícula profesional
+                </label>
+                <Input
+                  id="licenseNumber"
+                  type="text"
+                  placeholder="MP 12.345"
+                  pattern="[A-Za-zÁÉÍÓÚÑáéíóúñ0-9 .,\-]{4,25}"
+                  title="Entre 4 y 25 caracteres alfanuméricos (ej. MP 12.345)"
+                  value={licenseNumber}
+                  onChange={(event) => setLicenseNumber(event.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {isRegistering && (
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium leading-none"
+                  htmlFor="licenseProvince"
+                >
+                  Jurisdicción de la matrícula
+                </label>
+                <Select
+                  value={licenseProvince}
+                  onValueChange={(value) => setLicenseProvince(value)}
+                  required
+                >
+                  <SelectTrigger className="w-full" id="licenseProvince">
+                    <SelectValue>
+                      {licenseProvince ?? "Seleccioná la provincia"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ARGENTINE_PROVINCES.map((province) => (
+                      <SelectItem key={province} value={province}>
+                        {province}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  La matrícula la emite el colegio de psicólogos de cada
+                  jurisdicción.
+                </p>
               </div>
             )}
             <div className="space-y-2">
