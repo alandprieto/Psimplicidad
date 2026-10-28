@@ -25,6 +25,7 @@ export interface Consultation {
   professionalId: string;
   patientId: string;
   consultationTypeId?: string | null;
+  title: string;
   startsAt: string;
   durationMinutes: number;
   priceCents: number;

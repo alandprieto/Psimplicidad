@@ -12,6 +12,7 @@ interface DashboardConsultationRow {
   professional_id: string;
   patient_id: string;
   consultation_type_id: string | null;
+  title: string;
   starts_at: string;
   duration_minutes: number;
   price_cents: number;
@@ -114,6 +115,7 @@ export async function getDashboardMetrics() {
       professionalId: row.professional_id,
       patientId: row.patient_id,
       consultationTypeId: row.consultation_type_id,
+      title: row.title,
       startsAt: row.starts_at,
       durationMinutes: row.duration_minutes,
       priceCents: row.price_cents,

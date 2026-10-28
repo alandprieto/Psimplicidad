@@ -3,6 +3,7 @@ import { z } from "zod";
 export const consultationSchema = z.object({
   patientId: z.string().min(1, "Debe seleccionar un paciente"),
   consultationTypeId: z.string().optional(),
+  title: z.string().min(1, "El título es obligatorio"),
   startsAt: z.string().min(1, "La fecha y hora son obligatorias"),
   durationMinutes: z.coerce
     .number()

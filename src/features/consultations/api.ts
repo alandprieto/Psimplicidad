@@ -19,6 +19,7 @@ export async function getConsultations(): Promise<Consultation[]> {
     professionalId: c.professional_id,
     patientId: c.patient_id,
     consultationTypeId: c.consultation_type_id,
+    title: c.title,
     startsAt: c.starts_at,
     durationMinutes: c.duration_minutes,
     priceCents: c.price_cents,
@@ -43,6 +44,7 @@ export async function getConsultations(): Promise<Consultation[]> {
 export async function createConsultation(consultation: {
   patientId: string;
   consultationTypeId?: string | null;
+  title: string;
   startsAt: string;
   durationMinutes: number;
   priceCents: number;
@@ -59,6 +61,7 @@ export async function createConsultation(consultation: {
       professional_id: user.id,
       patient_id: consultation.patientId,
       consultation_type_id: consultation.consultationTypeId || null,
+      title: consultation.title,
       starts_at: consultation.startsAt,
       duration_minutes: consultation.durationMinutes,
       price_cents: consultation.priceCents,
@@ -80,6 +83,7 @@ export async function createConsultation(consultation: {
     professionalId: data.professional_id,
     patientId: data.patient_id,
     consultationTypeId: data.consultation_type_id,
+    title: data.title,
     startsAt: data.starts_at,
     durationMinutes: data.duration_minutes,
     priceCents: data.price_cents,
@@ -118,6 +122,7 @@ export async function updateConsultation(
   consultation: {
     patientId: string;
     consultationTypeId?: string | null;
+    title: string;
     startsAt: string;
     durationMinutes: number;
     priceCents: number;
@@ -129,6 +134,7 @@ export async function updateConsultation(
     .update({
       patient_id: consultation.patientId,
       consultation_type_id: consultation.consultationTypeId || null,
+      title: consultation.title,
       starts_at: consultation.startsAt,
       duration_minutes: consultation.durationMinutes,
       price_cents: consultation.priceCents,

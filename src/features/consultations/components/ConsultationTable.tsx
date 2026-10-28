@@ -90,7 +90,7 @@ export function ConsultationTable() {
           <TableRow>
             <TableHead>Fecha y Hora</TableHead>
             <TableHead>Paciente</TableHead>
-            <TableHead>Servicio</TableHead>
+            <TableHead>Título / Servicio</TableHead>
             <TableHead>Precio</TableHead>
             <TableHead>Cobrado</TableHead>
             <TableHead>Estado</TableHead>
@@ -107,8 +107,7 @@ export function ConsultationTable() {
               ? `${consultation.patient.lastName}, ${consultation.patient.firstName}`
               : "Paciente desconocido";
 
-            const serviceName =
-              consultation.consultationType?.name || "Personalizado";
+            const serviceName = consultation.title;
             const remainingCents =
               consultation.priceCents - consultation.paidCents;
             const canRegisterPayment =

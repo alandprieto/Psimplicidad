@@ -42,6 +42,7 @@ function getFormValues(consultation?: Consultation): ConsultationFormData {
   return {
     patientId: consultation?.patientId ?? "",
     consultationTypeId: consultation?.consultationTypeId ?? "",
+    title: consultation?.title ?? "Consulta psicológica",
     startsAt: consultation ? toDateTimeLocal(consultation.startsAt) : "",
     durationMinutes: consultation?.durationMinutes ?? 50,
     pricePesos: consultation ? centsToPesos(consultation.priceCents) : 0,
@@ -89,13 +90,12 @@ export function ConsultationForm({
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const typeId = e.target.value;
     setValue("consultationTypeId", typeId);
+    const found = consultationTypes?.find((type) => type.id === typeId);
+    setValue("title", found?.name ?? "Consulta psicológica");
 
-    if (typeId && consultationTypes) {
-      const found = consultationTypes.find((t) => t.id === typeId);
-      if (found) {
-        setValue("durationMinutes", found.defaultDurationMinutes);
-        setValue("pricePesos", centsToPesos(found.defaultPriceCents));
-      }
+    if (found) {
+      setValue("durationMinutes", found.defaultDurationMinutes);
+      setValue("pricePesos", centsToPesos(found.defaultPriceCents));
     }
   };
 
@@ -108,6 +108,7 @@ export function ConsultationForm({
       const values = {
         patientId: data.patientId,
         consultationTypeId: data.consultationTypeId || undefined,
+        title: data.title,
         startsAt: startsAtIso,
         durationMinutes: data.durationMinutes,
         priceCents,
@@ -184,6 +185,14 @@ export function ConsultationForm({
               <p className="text-xs text-destructive">
                 {errors.patientId.message}
               </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Título</label>
+            <Input placeholder="Consulta psicológica" {...register("title")} />
+            {errors.title && (
+              <p className="text-xs text-destructive">{errors.title.message}</p>
             )}
           </div>
 
