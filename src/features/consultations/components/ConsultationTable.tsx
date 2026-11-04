@@ -1,8 +1,5 @@
 import { useState } from "react";
-import {
-  useCancelConsultation,
-  useConsultations,
-} from "../hooks";
+import { useCancelConsultation, useConsultations } from "../hooks";
 import { PaymentForm } from "@/features/payments/components/PaymentForm";
 import { ConsultationForm } from "./ConsultationForm";
 import {
@@ -24,20 +21,8 @@ import {
 import { formatLocalDateTime } from "@/lib/dates";
 import { formatARS } from "@/lib/money";
 import { Calendar, MoreHorizontal, Pencil, XCircle } from "lucide-react";
-import type { Consultation, ConsultationStatus } from "@/types/domain";
-
-const statusBadgeVariant: Record<
-  ConsultationStatus,
-  {
-    label: string;
-    variant: "default" | "secondary" | "outline" | "destructive";
-  }
-> = {
-  pendiente: { label: "Pendiente", variant: "secondary" },
-  parcial: { label: "Pago Parcial", variant: "outline" },
-  pagada: { label: "Pagada", variant: "default" },
-  cancelada: { label: "Cancelada", variant: "destructive" },
-};
+import type { Consultation } from "@/types/domain";
+import { statusBadgeVariant, getPatientName } from "../lib/presentation";
 
 export function ConsultationTable() {
   const { data: consultations, isLoading, error } = useConsultations();
@@ -48,7 +33,7 @@ export function ConsultationTable() {
   const handleCancel = (consultation: Consultation) => {
     if (
       window.confirm(
-        `¿Seguro que quieres cancelar la consulta de ${consultation.patient?.firstName ?? "este paciente"}?`,
+        `¿Seguro que quieres cancelar la consulta de ${getPatientName(consultation)}}?`,
       )
     ) {
       cancelMutation.mutate(consultation.id);
@@ -103,9 +88,7 @@ export function ConsultationTable() {
               label: consultation.status,
               variant: "secondary",
             };
-            const patientName = consultation.patient
-              ? `${consultation.patient.lastName}, ${consultation.patient.firstName}`
-              : "Paciente desconocido";
+            const patientName = getPatientName(consultation);
 
             const serviceName = consultation.title;
             const remainingCents =
@@ -151,9 +134,7 @@ export function ConsultationTable() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() =>
-                              setEditingConsultation(consultation)
-                            }
+                            onClick={() => setEditingConsultation(consultation)}
                             className="gap-2 cursor-pointer"
                           >
                             <Pencil className="h-4 w-4" />

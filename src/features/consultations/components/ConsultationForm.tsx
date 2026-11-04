@@ -6,10 +6,7 @@ import {
   type ConsultationFormData,
   type ConsultationFormInput,
 } from "../schemas";
-import {
-  useCreateConsultation,
-  useUpdateConsultation,
-} from "../hooks";
+import { useCreateConsultation, useUpdateConsultation } from "../hooks";
 import { usePatients } from "@/features/patients/hooks";
 import { useConsultationTypes } from "@/features/consultation-types/hooks";
 import { pesosToCents, centsToPesos } from "@/lib/money";
@@ -161,7 +158,7 @@ export function ConsultationForm({
           Nueva Consulta
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-112.5">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Editar Consulta" : "Agendar Nueva Consulta"}

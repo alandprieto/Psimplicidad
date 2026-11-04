@@ -23,11 +23,13 @@ import { DollarSign } from "lucide-react";
 interface PaymentFormProps {
   consultationId: string;
   remainingCents: number; // Para sugerir el monto pendiente
+  compact?: boolean; // Para mostrar un botón más pequeño y compacto
 }
 
 export function PaymentForm({
   consultationId,
   remainingCents,
+  compact,
 }: PaymentFormProps) {
   const [open, setOpen] = useState(false);
   const createMutation = useCreatePayment();
@@ -69,12 +71,19 @@ export function PaymentForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
-        render={<Button size="sm" variant="outline" className="gap-1.5" />}
+        render={
+          <Button
+            size={compact ? "icon-xs" : "sm"}
+            variant="outline"
+            className="gap-1.5"
+          />
+        }
       >
         <DollarSign className="h-4 w-4 text-emerald-600" />
-        Registrar Pago
+        {!compact && "Registrar Pago"}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px]">
+
+      <DialogContent className="sm:max-w-100">
         <DialogHeader>
           <DialogTitle>Registrar Cobro / Pago</DialogTitle>
         </DialogHeader>
