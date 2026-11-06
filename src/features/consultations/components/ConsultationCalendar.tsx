@@ -1,15 +1,7 @@
 import { useState, useMemo } from "react";
-import { useCancelConsultation, useConsultations } from "../hooks";
-import { PaymentForm } from "@/features/payments/components/PaymentForm";
+import { useConsultations } from "../hooks";
 import { ConsultationForm } from "./ConsultationForm";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   formatMonthYear,
   getInitialMonth,
@@ -17,23 +9,10 @@ import {
   toDateKey,
   formatTime,
 } from "@/lib/dates";
-import {
-  MoreHorizontal,
-  Pencil,
-  XCircle,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import type { Consultation, ConsultationStatus } from "@/types/domain";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Consultation } from "@/types/domain";
 import { cn } from "cn";
-import { statusBadgeVariant, getPatientName } from "../lib/presentation";
-
-const statusDotClass: Record<ConsultationStatus, string> = {
-  pendiente: "bg-slate-400",
-  parcial: "bg-amber-500",
-  pagada: "bg-emerald-500",
-  cancelada: "bg-red-500",
-};
+import { getPatientName } from "../lib/presentation";
 
 function addMonths(year: number, month: number, delta: number) {
   const total = year * 12 + month + delta;
@@ -45,7 +24,6 @@ function addMonths(year: number, month: number, delta: number) {
 
 export function ConsultationCalendar() {
   const { data: consultations, isLoading, error } = useConsultations();
-  const cancelMutation = useCancelConsultation();
 
   const [editingConsultation, setEditingConsultation] =
     useState<Consultation | null>(null);
@@ -68,16 +46,6 @@ export function ConsultationCalendar() {
   }, [consultations]);
 
   const cells = getMonthGrid(cursor.year, cursor.month);
-
-  const handleCancel = (consultation: Consultation) => {
-    if (
-      window.confirm(
-        `¿Seguro que quieres cancelar la consulta de ${getPatientName(consultation)}?`,
-      )
-    ) {
-      cancelMutation.mutate(consultation.id);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -168,108 +136,23 @@ export function ConsultationCalendar() {
 
                   <div className="flex flex-col gap-1 overflow-y-auto max-h-24">
                     {items.map((consultation) => {
-                      const badgeInfo = statusBadgeVariant[
-                        consultation.status
-                      ] || {
-                        label: consultation.status,
-                        variant: "secondary" as const,
-                      };
-
-                      const remainingCents =
-                        consultation.priceCents - consultation.paidCents;
-                      const canRegisterPayment =
-                        consultation.status !== "pagada" &&
-                        consultation.status !== "cancelada";
-
                       return (
                         <div
                           key={consultation.id}
-                          className={cn(
-                            "rounded-md border p-1.5 text-xs shadow-sm border-l-4",
-                            consultation.status === "pagada" &&
-                              "border-l-emerald-500",
-                            consultation.status === "parcial" &&
-                              "border-l-amber-500",
-                            consultation.status === "pendiente" &&
-                              "border-l-slate-400",
-                            consultation.status === "cancelada" &&
-                              "border-l-red-500 opacity-60",
-                          )}
+                          className="rounded-md border p-1.5 text-xs shadow-sm"
                         >
                           <button
                             type="button"
                             onClick={() => setEditingConsultation(consultation)}
                             className="block w-full text-left"
                           >
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="font-medium">
-                                {formatTime(consultation.startsAt)}
-                              </span>
-                              <span
-                                className={cn(
-                                  "h-2 w-2 rounded-full",
-                                  statusDotClass[consultation.status],
-                                )}
-                              />
+                            <div className="font-medium">
+                              {formatTime(consultation.startsAt)}
                             </div>
                             <div className="truncate">
                               {getPatientName(consultation)}
                             </div>
-                            <div className="truncate text-muted-foreground">
-                              {consultation.title}
-                            </div>
                           </button>
-
-                          <div className="mt-1 flex items-center gap-1">
-                            {canRegisterPayment && (
-                              <PaymentForm
-                                consultationId={consultation.id}
-                                remainingCents={remainingCents}
-                              />
-                            )}
-
-                            {consultation.status !== "cancelada" && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger
-                                  render={
-                                    <Button
-                                      variant="ghost"
-                                      size="icon-xs"
-                                      aria-label="Acciones de la consulta"
-                                    />
-                                  }
-                                >
-                                  <MoreHorizontal className="h-3.5 w-3.5" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() =>
-                                      setEditingConsultation(consultation)
-                                    }
-                                    className="gap-2 cursor-pointer"
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                    Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => handleCancel(consultation)}
-                                    disabled={cancelMutation.isPending}
-                                    className="gap-2 cursor-pointer text-destructive"
-                                  >
-                                    <XCircle className="h-4 w-4" />
-                                    Cancelar consulta
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            )}
-                          </div>
-
-                          <Badge
-                            variant={badgeInfo.variant}
-                            className="mt-1 text-[10px] px-1.5 py-0"
-                          >
-                            {badgeInfo.label}
-                          </Badge>
                         </div>
                       );
                     })}
@@ -279,12 +162,6 @@ export function ConsultationCalendar() {
             })}
           </div>
         </>
-      )}
-
-      {cancelMutation.error && (
-        <p className="text-sm text-destructive" role="alert">
-          No se pudo cancelar la consulta: {cancelMutation.error.message}
-        </p>
       )}
 
       <ConsultationForm
